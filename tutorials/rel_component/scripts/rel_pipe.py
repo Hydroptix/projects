@@ -208,7 +208,14 @@ def score_relations(examples: Iterable[Example], threshold: float) -> Dict[str, 
         gold = example.reference._.rel
         pred = example.predicted._.rel
         for key, pred_dict in pred.items():
-            gold_labels = [k for (k, v) in gold[key].items() if v == 1.0]
+
+            if key in gold:
+                gold_labels = [k for (k, v) in gold[key].items() if v == 1.0]
+            elif (key[1], key[0]) in gold:
+                gold_labels = [k for (k, v) in gold[(key[1], key[0])].items() if v == 1.0]
+            else:
+                gold_labels = []
+
             for k, v in pred_dict.items():
                 if v >= threshold:
                     if k in gold_labels:
